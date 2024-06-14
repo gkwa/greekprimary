@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -11,7 +12,10 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Manage configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Config command called")
+		configFile := viper.ConfigFileUsed()
+		if configFile != "" {
+			fmt.Println(configFile)
+		}
 	},
 }
 
@@ -27,9 +31,6 @@ var addCmd = &cobra.Command{
 		for _, dir := range args {
 			if !contains(directories, dir) {
 				directories = append(directories, dir)
-				fmt.Println("Directory added:", dir)
-			} else {
-				fmt.Println("Directory already exists:", dir)
 			}
 		}
 		viper.Set("directories", directories)
@@ -51,7 +52,6 @@ var removeCmd = &cobra.Command{
 		for _, dir := range args {
 			if contains(directories, dir) {
 				directories = remove(directories, dir)
-				fmt.Println("Directory removed:", dir)
 			} else {
 				fmt.Println("Directory not found:", dir)
 			}
@@ -71,7 +71,6 @@ var listCmd = &cobra.Command{
 		if len(directories) == 0 {
 			fmt.Println("No directories found")
 		} else {
-			fmt.Println("Stored directories:")
 			for _, dir := range directories {
 				fmt.Println("-", dir)
 			}
@@ -88,7 +87,7 @@ func init() {
 
 func contains(slice []string, item string) bool {
 	for _, s := range slice {
-		if s == item {
+		if strings.EqualFold(s, item) {
 			return true
 		}
 	}
@@ -97,7 +96,7 @@ func contains(slice []string, item string) bool {
 
 func remove(slice []string, item string) []string {
 	for i, s := range slice {
-		if s == item {
+		if strings.EqualFold(s, item) {
 			return append(slice[:i], slice[i+1:]...)
 		}
 	}
