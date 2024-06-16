@@ -19,6 +19,17 @@ var configCmd = &cobra.Command{
 	},
 }
 
+var dirCmd = &cobra.Command{
+	Use:   "dir",
+	Short: "Manage configuration",
+	Run: func(cmd *cobra.Command, args []string) {
+		configFile := viper.ConfigFileUsed()
+		if configFile != "" {
+			fmt.Println(configFile)
+		}
+	},
+}
+
 var addCmd = &cobra.Command{
 	Use:   "add <directories>...",
 	Short: "Add directories to the list",
@@ -54,6 +65,8 @@ var removeCmd = &cobra.Command{
 				directories = remove(directories, dir)
 			} else {
 				fmt.Println("Directory not found:", dir)
+				fmt.Println("Current directories:")
+				showDirs()
 			}
 		}
 		viper.Set("directories", directories)
@@ -67,21 +80,26 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all stored directories",
 	Run: func(cmd *cobra.Command, args []string) {
-		directories := viper.GetStringSlice("directories")
-		if len(directories) == 0 {
-			fmt.Println("No directories found")
-		} else {
-			for _, dir := range directories {
-				fmt.Println("-", dir)
-			}
-		}
+		showDirs()
 	},
 }
 
+func showDirs() {
+	directories := viper.GetStringSlice("directories")
+	if len(directories) == 0 {
+		fmt.Println("No directories found")
+	} else {
+		for _, dir := range directories {
+			fmt.Println("-", dir)
+		}
+	}
+}
+
 func init() {
-	configCmd.AddCommand(addCmd)
-	configCmd.AddCommand(removeCmd)
-	configCmd.AddCommand(listCmd)
+	dirCmd.AddCommand(addCmd)
+	dirCmd.AddCommand(removeCmd)
+	dirCmd.AddCommand(listCmd)
+	configCmd.AddCommand(dirCmd)
 	rootCmd.AddCommand(configCmd)
 }
 
