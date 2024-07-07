@@ -23,6 +23,14 @@ var dirCmd = &cobra.Command{
 	Use:   "dir",
 	Short: "Manage configuration",
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			err := cmd.Usage()
+			if err != nil {
+				fmt.Println("no directory path provided:", err)
+			}
+			return
+		}
+
 		configFile := viper.ConfigFileUsed()
 		if configFile != "" {
 			fmt.Println(configFile)
