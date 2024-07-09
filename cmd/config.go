@@ -18,8 +18,6 @@ var configCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(configFile)
-
 		configContents, err := os.ReadFile(configFile)
 		if err != nil {
 			fmt.Println("Error reading file:", err)
@@ -27,6 +25,7 @@ var configCmd = &cobra.Command{
 		}
 
 		fmt.Println(string(configContents))
+		fmt.Println(configFile)
 	},
 }
 
