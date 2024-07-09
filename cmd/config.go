@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -13,9 +14,19 @@ var configCmd = &cobra.Command{
 	Short: "Manage configuration",
 	Run: func(cmd *cobra.Command, args []string) {
 		configFile := viper.ConfigFileUsed()
-		if configFile != "" {
-			fmt.Println(configFile)
+		if configFile == "" {
+			return
 		}
+
+		fmt.Println(configFile)
+
+		configContents, err := os.ReadFile(configFile)
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			return
+		}
+
+		fmt.Println(string(configContents))
 	},
 }
 
